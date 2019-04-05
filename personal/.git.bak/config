@@ -1,0 +1,14 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "staff"]
+	url = https://github.com/Berkeley-CS162/ta.git
+	fetch = +refs/heads/*:refs/remotes/staff/*
+[branch "master"]
+	remote = master
+	merge = refs/heads/master
+[remote "master"]
+	url = git@github.com:uniquebby/CS162.git
+	fetch = +refs/heads/*:refs/remotes/master/*

@@ -1,0 +1,51 @@
+1.What is the value of argv?
+(char **) 0x7fffffffe598
+
+2.What is pointed to by argv?
+0x7fffffffe7d2 "/home/vagrant/code/personal/hw0/wc"
+
+3.What is the address of the function main?
+0x40065d
+
+4.Try info stack.Explain what you see.
+(gdb) info stack
+#0  main (argc=2, argv=0x7fffffffe598) at wc.c:6
+
+5.Try info frame.Explain what you see.
+(gdb) info frame
+Stack level 0, frame at 0x7fffffffe4c0:
+ rip = 0x40066c in main (wc.c:6); saved rip = 0x7ffff7a32f45
+  source language c.
+   Arglist at 0x7fffffffe4b0, args: argc=2, argv=0x7fffffffe598
+    Locals at 0x7fffffffe4b0, Previous frame's sp is 0x7fffffffe4c0
+	 Saved registers:
+	   rbp at 0x7fffffffe4b0, rip at 0x7fffffffe4b8
+
+6.Try info registers.Which registers are holding aspects of the program that you recongnize?
+(gdb) inf registers
+rax            0x40065d	4195933
+rbx            0x0	0
+rcx            0x0	0
+rdx            0x7fffffffe5b0	140737488348592
+rsi            0x7fffffffe598	140737488348568
+rdi            0x2	2
+rbp            0x7fffffffe4b0	0x7fffffffe4b0
+rsp            0x7fffffffe470	0x7fffffffe470
+r8             0x7ffff7dd4e80	140737351863936
+r9             0x7ffff7dea600	140737351951872
+r10            0x7fffffffe340	140737488347968
+r11            0x7ffff7a32e50	140737348054608
+r12            0x400570	4195696
+r13            0x7fffffffe590	140737488348560
+r14            0x0	0
+r15            0x0	0
+rip            0x40066c	0x40066c <main+15>
+eflags         0x202	[ IF ]
+cs             0x33	51
+ss             0x2b	43
+ds             0x0	0
+es             0x0	0
+fs             0x0	0
+gs             0x0	0
+
+
