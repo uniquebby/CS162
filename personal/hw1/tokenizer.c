@@ -1,6 +1,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
 #include "tokenizer.h"
 
 static void *vector_push(char ***pointer, size_t *size, void *elem) {
@@ -129,4 +131,14 @@ int is_direct_tok(struct tokens *tokens, char *r) {
 	  return i;
   }
   return 0;
+}
+
+/* Judge if the tokens is a backgroud tokens */
+bool is_bg_tok(struct tokens *tokens) {
+	bool is_bg = false;
+	if (strcmp(tokens->tokens[tokens->tokens_length - 1], "&") == 0) {
+    is_bg = true;
+		tokens->tokens[tokens->tokens_length - 1] = NULL;
+	}
+	return is_bg;
 }

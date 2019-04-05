@@ -23,3 +23,6 @@ void tokens_destroy(struct tokens *tokens);
 
 /* Return the token that is an exact match of r */
 int is_direct_tok(struct tokens *tokens, char *r);
+
+/* Judge if the tokens is a backgroud tokens */
+bool is_bg_tok(struct tokens *tokens);

@@ -1,0 +1,13 @@
+2.txt
+bg.txt
+Makefile
+path_token.c
+path_token.h
+path_token.o
+shell
+shell.c
+shell.o
+test.txt
+tokenizer.c
+tokenizer.h
+tokenizer.o

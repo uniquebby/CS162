@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <stdbool.h>
 #include <time.h>
 
 #include "tokenizer.h"
@@ -38,6 +39,7 @@ int cmd_exit(struct tokens *tokens);
 int cmd_help(struct tokens *tokens);
 int cmd_cd(struct tokens *tokens);
 int cmd_pwd(struct tokens *tokens);
+int cmd_wait(struct tokens *tokens);
 
 /* Built-in command functions take token array (see parse.h) and return int */
 typedef int cmd_fun_t(struct tokens *tokens);
@@ -54,8 +56,8 @@ fun_desc_t cmd_table[] = {
   {cmd_exit, "exit", "exit the command shell"},
   {cmd_cd, "cd", "change directory"},
   {cmd_pwd, "pwd", "prints the current working directory"},
+	{cmd_wait, "wait", "waits until all background jobs have terminated"},
 };
-
 /* Prints a helpful description for the given command */
 int cmd_help(unused struct tokens *tokens) {
   for (unsigned int i = 0; i < sizeof(cmd_table) / sizeof(fun_desc_t); i++)
@@ -86,6 +88,25 @@ int cmd_pwd(unused struct tokens *tokens) {
       return 0;
 	  }				  
   return 1;
+}
+
+/**
+	 * Waits until all background jobs have terminated
+	  */
+int cmd_wait(unused struct tokens *tokens) {
+  int status;
+	pid_t pid;
+	while ((pid = waitpid(-1, &status, 0)) > 0) {
+	  if (WIFEXITED(status)) {
+		  printf("child [%d] has terminted with exit status = %d\n", pid, WEXITSTATUS(status));
+		} else {
+		  printf("child [%d] terminated with error\n", pid);
+		}
+	}
+	  if (errno != ECHILD) {
+	  fprintf(stderr, "waitpid error\n");
+	}
+	return 0;
 }
 
 /* IO redirection */
@@ -168,7 +189,12 @@ void init_shell() {
 
     /* Saves the shell's process id */
     shell_pgid = getpid();
-
+		/* Put shell in its own process group */
+		if (setpgid(shell_pgid, shell_pgid) < 0) {
+	    fprintf(stderr, "Couldn’t put the shell in its own process group");
+		  exit(1);
+		}
+	
     /* Take control of the terminal */
     tcsetpgrp(shell_terminal, shell_pgid);
 
@@ -190,6 +216,7 @@ int main(unused int argc, unused char *argv[]) {
   while (fgets(line, 4096, stdin)) {
     /* Split our line into words. */
     struct tokens *tokens = tokenize(line);
+		bool is_bg = is_bg_tok(tokens);
 
     /* Find which built-in function to run. */
     int fundex = lookup(tokens_get_token(tokens, 0));
@@ -224,7 +251,12 @@ int main(unused int argc, unused char *argv[]) {
 	    path_tokens_destroy(path_tokens);
 	 	exit(0);
 	  }else{
-        wait(NULL);			  
+			if(!is_bg) {
+				int child_status;
+				if (waitpid(pid, &child_status, 0) < 0) {
+			    fprintf(stderr, "waitpid error\n");
+				}
+			}
 	   }
     }
 
